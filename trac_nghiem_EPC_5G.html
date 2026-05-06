@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trắc Nghiệm EPC · 5G · TDD/FDD · Pilot</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0f1e;
+    --surface: #111827;
+    --card: #1a2332;
+    --border: #243044;
+    --accent: #3b82f6;
+    --accent2: #06b6d4;
+    --accent3: #8b5cf6;
+    --correct: #10b981;
+    --wrong: #ef4444;
+    --text: #ffffff;
+    --muted: #64748b;
+    --gold: #f59e0b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse 80% 60% at 20% -10%, rgba(59,130,246,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 110%, rgba(139,92,246,0.10) 0%, transparent 60%);
+  }
+
+  .header {
+    text-align: center;
+    padding: 48px 20px 32px;
+    position: relative;
+  }
+
+  .header::after {
+    content: '';
+    display: block;
+    width: 120px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    margin: 20px auto 0;
+    border-radius: 2px;
+  }
+
+  .badge {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    background: rgba(59,130,246,0.12);
+    border: 1px solid rgba(59,130,246,0.3);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-size: clamp(24px, 5vw, 42px);
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #e2e8f0, #94a3b8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  h1 span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 15px;
+    margin-top: 10px;
+    font-weight: 400;
+  }
+
+  /* START SCREEN */
+  #start-screen {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+    text-align: center;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 32px 0;
+  }
+
+  .info-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 12px;
+  }
+
+  .info-card .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .info-card .lbl {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 6px;
+    font-weight: 500;
+  }
+
+  .topics {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: left;
+    margin-bottom: 28px;
+  }
+
+  .topics h3 {
+    font-size: 13px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+
+  .topic-tag {
+    display: inline-block;
+    background: rgba(59,130,246,0.1);
+    border: 1px solid rgba(59,130,246,0.2);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 12px;
+    color: var(--accent2);
+    margin: 3px;
+    font-weight: 500;
+  }
+
+  .btn-start {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: 16px;
+    color: white;
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: all 0.2s;
+    box-shadow: 0 8px 32px rgba(59,130,246,0.3);
+  }
+
+  .btn-start:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(59,130,246,0.4);
+  }
+
+  /* QUIZ SCREEN */
+  #quiz-screen { display: none; max-width: 680px; margin: 0 auto; padding: 0 20px 60px; }
+
+  .progress-bar-wrap {
+    background: var(--surface);
+    border-radius: 100px;
+    height: 6px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 100px;
+    transition: width 0.4s ease;
+  }
+
+  .quiz-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .q-counter {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .q-counter span { color: var(--accent); }
+
+  .score-live {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .score-live .s { color: var(--correct); font-family: 'JetBrains Mono', monospace; }
+
+  .question-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    margin-bottom: 16px;
+    animation: slideIn 0.35s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-section {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent2);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+  }
+
+  .q-text {
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.55;
+    color: var(--text);
+  }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 18px;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.18s;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+    text-align: left;
+    color: #ffffff;
+  }
+
+  .option:hover:not(.disabled) {
+    border-color: var(--accent);
+    background: rgba(59,130,246,0.06);
+    transform: translateX(3px);
+  }
+
+  .option .opt-key {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    transition: all 0.18s;
+  }
+
+  .option.selected { border-color: var(--accent); background: rgba(59,130,246,0.08); }
+  .option.selected .opt-key { background: var(--accent); color: white; }
+
+  .option.correct { border-color: var(--correct); background: rgba(16,185,129,0.08); }
+  .option.correct .opt-key { background: var(--correct); color: white; }
+
+  .option.wrong { border-color: var(--wrong); background: rgba(239,68,68,0.08); }
+  .option.wrong .opt-key { background: var(--wrong); color: white; }
+
+  .option.disabled { cursor: default; }
+
+  .explain-box {
+    margin-top: 14px;
+    padding: 14px 18px;
+    background: rgba(6,182,212,0.06);
+    border: 1px solid rgba(6,182,212,0.2);
+    border-radius: 12px;
+    font-size: 13.5px;
+    color: #94d8e8;
+    line-height: 1.6;
+    animation: fadeIn 0.3s ease;
+    display: none;
+  }
+
+  .explain-box.show { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+
+  .explain-box strong {
+    display: block;
+    color: var(--accent2);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+
+  .nav-row {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+
+  .btn {
+    padding: 13px 24px;
+    border-radius: 12px;
+    border: none;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+    box-shadow: 0 4px 16px rgba(59,130,246,0.25);
+  }
+
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(59,130,246,0.35); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn-ghost {
+    background: var(--card);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover { background: var(--border); color: var(--text); }
+
+  /* RESULT SCREEN */
+  #result-screen { display: none; max-width: 560px; margin: 0 auto; padding: 0 20px 60px; text-align: center; }
+
+  .score-ring {
+    width: 160px;
+    height: 160px;
+    margin: 32px auto 24px;
+    position: relative;
+  }
+
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring circle { transition: stroke-dashoffset 1s ease; }
+
+  .score-ring .ring-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transform: none;
+  }
+
+  .ring-text .big { font-family: 'JetBrains Mono', monospace; font-size: 38px; font-weight: 700; line-height: 1; }
+  .ring-text .small { font-size: 12px; color: var(--muted); font-weight: 600; margin-top: 4px; }
+
+  .result-grade {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .result-msg {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 10px;
+  }
+
+  .stat-card .n {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .stat-card .l { font-size: 11px; color: var(--muted); margin-top: 4px; font-weight: 500; }
+
+  .review-list { text-align: left; margin-bottom: 24px; }
+  .review-list h3 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 12px;
+    font-weight: 700;
+  }
+
+  .review-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    font-size: 13.5px;
+  }
+
+  .review-item .ri-q { font-weight: 600; color: var(--text); margin-bottom: 6px; line-height: 1.4; }
+  .review-item .ri-correct { color: var(--correct); font-size: 12.5px; font-weight: 500; }
+  .review-item .ri-yours { color: var(--wrong); font-size: 12.5px; font-weight: 500; }
+
+  .btn-restart {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, var(--accent3), var(--accent));
+    border: none;
+    border-radius: 16px;
+    color: white;
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 8px 32px rgba(139,92,246,0.25);
+    margin-bottom: 12px;
+  }
+
+  .btn-restart:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(139,92,246,0.35); }
+
+  .btn-home {
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-home:hover { border-color: var(--accent); color: var(--text); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="badge">📡 Ôn Tập Viễn Thông</div>
+  <h1>Trắc Nghiệm <span>EPC · 5G</span><br>TDD/FDD · Pilot</h1>
+  <p class="subtitle">Random 15 câu từ ngân hàng 100 câu · Mỗi lần làm là bộ câu mới</p>
+</div>
+
+<!-- START SCREEN -->
+<div id="start-screen">
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="num">100</div>
+      <div class="lbl">Câu hỏi</div>
+    </div>
+    <div class="info-card">
+      <div class="num" style="color:var(--accent2)">15</div>
+      <div class="lbl">Mỗi lần thi</div>
+    </div>
+    <div class="info-card">
+      <div class="num" style="color:var(--accent3)">5</div>
+      <div class="lbl">Chủ đề</div>
+    </div>
+  </div>
+  <div class="topics">
+    <h3>Các chủ đề</h3>
+    <span class="topic-tag">EPC 4G LTE</span>
+    <span class="topic-tag">Control & User Plane</span>
+    <span class="topic-tag">CUPS</span>
+    <span class="topic-tag">5G Core / SBA</span>
+    <span class="topic-tag">TDD & FDD</span>
+    <span class="topic-tag">Massive MIMO</span>
+    <span class="topic-tag">Pilot Symbol</span>
+    <span class="topic-tag">Pilot Contamination</span>
+  </div>
+  <button class="btn-start" onclick="startQuiz()">🚀 Bắt đầu làm bài</button>
+</div>
+
+<!-- QUIZ SCREEN -->
+<div id="quiz-screen">
+  <div class="progress-bar-wrap">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
+  <div class="quiz-meta">
+    <div class="q-counter">Câu <span id="q-num">1</span> / 15</div>
+    <div class="score-live">✓ <span class="s" id="live-score">0</span>&nbsp;đúng</div>
+  </div>
+  <div id="question-area"></div>
+  <div class="nav-row">
+    <button class="btn btn-ghost" onclick="skipQuestion()" id="btn-skip">Bỏ qua</button>
+    <button class="btn btn-primary" onclick="nextQuestion()" id="btn-next" disabled>Tiếp theo →</button>
+  </div>
+</div>
+
+<!-- RESULT SCREEN -->
+<div id="result-screen">
+  <div class="score-ring">
+    <svg width="160" height="160" viewBox="0 0 160 160">
+      <circle cx="80" cy="80" r="68" fill="none" stroke="#1a2332" stroke-width="14"/>
+      <circle id="score-arc" cx="80" cy="80" r="68" fill="none" stroke-width="14"
+        stroke-linecap="round" stroke-dasharray="427" stroke-dashoffset="427"/>
+    </svg>
+    <div class="ring-text">
+      <div class="big" id="score-big">0</div>
+      <div class="small">/ 15</div>
+    </div>
+  </div>
+
+  <div class="result-grade" id="result-grade"></div>
+  <div class="result-msg" id="result-msg"></div>
+
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="n" style="color:var(--correct)" id="stat-correct">0</div>
+      <div class="l">Đúng</div>
+    </div>
+    <div class="stat-card">
+      <div class="n" style="color:var(--wrong)" id="stat-wrong">0</div>
+      <div class="l">Sai / Bỏ</div>
+    </div>
+    <div class="stat-card">
+      <div class="n" style="color:var(--gold)" id="stat-pct">0%</div>
+      <div class="l">Điểm</div>
+    </div>
+  </div>
+
+  <div class="review-list" id="review-list"></div>
+
+  <button class="btn-restart" onclick="startQuiz()">🔀 Làm lại (bộ câu mới)</button>
+  <button class="btn-home" onclick="showHome()">← Về trang chủ</button>
+</div>
+
+<script>
+const ALL_QUESTIONS = [
+  { section: "EPC 4G LTE", q: "EPC là viết tắt của cụm nào?", opts: ["Enhanced Packet Control","Evolved Packet Core","External Packet Connection","Ethernet Packet Core"], ans: 1, explain: "EPC là Evolved Packet Core, tức mạng lõi gói phát triển trong LTE/4G." },
+  { section: "EPC 4G LTE", q: "Trong kiến trúc 4G LTE, EPC nằm ở phần nào của mạng?", opts: ["Mạng truy nhập vô tuyến","Mạng lõi","Thiết bị người dùng","Mạng cảm biến"], ans: 1, explain: "EPC là mạng lõi phía sau eNB, xử lý kết nối, định tuyến dữ liệu và các chức năng điều khiển." },
+  { section: "EPC 4G LTE", q: "UE trong mạng di động là gì?", opts: ["Thiết bị người dùng","Trạm gốc 4G","Cổng mạng dữ liệu","Máy chủ chính sách"], ans: 0, explain: "UE là User Equipment, ví dụ điện thoại, modem, máy tính bảng hoặc thiết bị IoT." },
+  { section: "EPC 4G LTE", q: "eNB trong mạng LTE có nhiệm vụ chính nào?", opts: ["Lưu thông tin thuê bao","Cung cấp giao diện vô tuyến cho UE","Tính cước thuê bao","Chọn network slice"], ans: 1, explain: "eNB là trạm gốc LTE, kết nối UE với mạng thông qua giao diện vô tuyến." },
+  { section: "EPC 4G LTE", q: "Luồng dữ liệu người dùng cơ bản trong 4G LTE là gì?", opts: ["UE → MME → HSS → Internet","UE → eNB → S-GW → P-GW → Internet","UE → PCRF → HSS → Internet","UE → AMF → SMF → Internet"], ans: 1, explain: "Dữ liệu người dùng đi qua user plane gồm eNB, S-GW và P-GW trước khi ra Internet." },
+  { section: "EPC 4G LTE", q: "Khối nào là nút điều khiển chính trong LTE EPC?", opts: ["MME","S-GW","P-GW","TDF"], ans: 0, explain: "MME là Mobility Management Entity, trung tâm xử lý đăng ký, xác thực, di động và bearer." },
+  { section: "EPC 4G LTE", q: "MME thuộc mặt phẳng nào?", opts: ["User Plane","Control Plane","Application Plane","Physical Plane"], ans: 1, explain: "MME xử lý báo hiệu điều khiển và không truyền dữ liệu người dùng." },
+  { section: "EPC 4G LTE", q: "MME có trực tiếp truyền dữ liệu người dùng không?", opts: ["Có, tất cả dữ liệu đều qua MME","Không, MME chỉ xử lý điều khiển","Có, nhưng chỉ dữ liệu video","Có, nhưng chỉ khi roaming"], ans: 1, explain: "Dữ liệu người dùng đi qua S-GW/P-GW, còn MME xử lý attach, xác thực và điều khiển bearer." },
+  { section: "EPC 4G LTE", q: "Chức năng nào sau đây KHÔNG phải của MME?", opts: ["Attach/detach","Xác thực thuê bao","Phát sóng vô tuyến trực tiếp đến UE","Chọn S-GW và P-GW"], ans: 2, explain: "Phát sóng vô tuyến là nhiệm vụ của eNB, không phải MME." },
+  { section: "EPC 4G LTE", q: "HSS trong EPC có vai trò gì?", opts: ["Cơ sở dữ liệu thuê bao","Trạm gốc LTE","Cổng ra Internet","Khối phát hiện lưu lượng"], ans: 0, explain: "HSS lưu danh tính thuê bao, thông tin xác thực, hồ sơ dịch vụ và dữ liệu liên quan đến thuê bao." },
+  { section: "EPC 4G LTE", q: "MME phối hợp với khối nào để xác thực thuê bao?", opts: ["HSS","TDF","Data Network","eNB"], ans: 0, explain: "MME hỏi HSS để kiểm tra thông tin thuê bao và thông tin xác thực." },
+  { section: "EPC 4G LTE", q: "S-GW là viết tắt của cụm nào?", opts: ["Session Gateway","Serving Gateway","Service General Web","Subscriber Gateway"], ans: 1, explain: "S-GW là Serving Gateway, cổng phục vụ trong EPC." },
+  { section: "EPC 4G LTE", q: "Vai trò chính của S-GW là gì?", opts: ["Xử lý xác thực SIM","Chuyển tiếp dữ liệu người dùng giữa eNB và P-GW","Lưu hồ sơ thuê bao","Tạo pilot symbol"], ans: 1, explain: "S-GW định tuyến và chuyển tiếp gói dữ liệu người dùng trong mạng lõi 4G." },
+  { section: "EPC 4G LTE", q: "S-GW có vai trò gì khi UE chuyển giữa các eNB?", opts: ["Làm điểm neo di động cục bộ","Cấp phát SIM mới","Thay thế hoàn toàn MME","Phát hiện ứng dụng video"], ans: 0, explain: "S-GW có thể làm local mobility anchor trong quá trình handover giữa các eNB." },
+  { section: "EPC 4G LTE", q: "P-GW là viết tắt của cụm nào?", opts: ["Packet Data Network Gateway","Policy Gateway","Pilot Data Gateway","Public Data Group"], ans: 0, explain: "P-GW là Packet Data Network Gateway, cổng mạng dữ liệu gói." },
+  { section: "EPC 4G LTE", q: "Chức năng nổi bật của P-GW là gì?", opts: ["Kết nối UE ra mạng dữ liệu ngoài","Quản lý vùng theo dõi","Phát sóng LTE","Lưu khóa xác thực thuê bao"], ans: 0, explain: "P-GW là cổng kết nối EPC với Internet, IMS hoặc các mạng dữ liệu ngoài." },
+  { section: "EPC 4G LTE", q: "Khối nào thường cấp địa chỉ IP cho UE trong EPC?", opts: ["P-GW","eNB","TDF","PCRF"], ans: 0, explain: "P-GW có nhiệm vụ cấp phát địa chỉ IP cho UE khi thiết lập kết nối dữ liệu." },
+  { section: "EPC 4G LTE", q: "PCRF là viết tắt của cụm nào?", opts: ["Policy and Charging Rules Function","Packet Core Radio Function","Public Charging Router Function","Pilot Control Relay Function"], ans: 0, explain: "PCRF là chức năng chính sách và quy tắc tính cước trong EPC." },
+  { section: "EPC 4G LTE", q: "PCRF đưa ra quyết định liên quan đến vấn đề nào?", opts: ["QoS và tính cước","Phát sóng vô tuyến","Độ dài pilot","Mã hóa anten"], ans: 0, explain: "PCRF quyết định chính sách QoS, charging rules, bearer treatment và chính sách dịch vụ theo ứng dụng." },
+  { section: "EPC 4G LTE", q: "TDF là viết tắt của cụm nào?", opts: ["Traffic Detection Function","Transmission Data Frame","Terminal Duplex Function","Time Division Function"], ans: 0, explain: "TDF là chức năng phát hiện và phân loại lưu lượng dữ liệu." },
+  { section: "EPC 4G LTE", q: "TDF có nhiệm vụ chính nào?", opts: ["Nhận dạng loại lưu lượng như web, video, VoIP","Xác thực SIM","Quản lý tracking area","Cấp phát tài nguyên vô tuyến"], ans: 0, explain: "TDF phân tích và nhận dạng loại lưu lượng dữ liệu của người dùng." },
+  { section: "EPC 4G LTE", q: "TDF thường nằm gần vị trí nào trong sơ đồ EPC?", opts: ["Giữa P-GW và Data IP Network","Giữa eNB và S-GW","Giữa MME và HSS","Giữa UE và eNB"], ans: 0, explain: "TDF thường được đặt phía sau P-GW để phân loại và quản lý lưu lượng trước khi ra mạng ngoài." },
+  { section: "EPC 4G LTE", q: "Khối nào là cổng ra Internet trong EPC?", opts: ["P-GW","S-GW","MME","HSS"], ans: 0, explain: "P-GW (Packet Data Network Gateway) là cổng kết nối EPC với Internet." },
+  { section: "EPC 4G LTE", q: "Khối nào quan trọng nhất về điều khiển trong EPC?", opts: ["MME","S-GW","P-GW","TDF"], ans: 0, explain: "MME là trung tâm control plane trong EPC, quản lý đăng ký, xác thực và di động." },
+  { section: "EPC 4G LTE", q: "Nếu không có MME, điều gì dễ xảy ra nhất?", opts: ["UE không thể đăng ký vào mạng và thiết lập kết nối dữ liệu","Dữ liệu video bị chậm","Pilot symbol bị lỗi","HSS không lưu được dữ liệu"], ans: 0, explain: "MME xử lý đăng ký UE nên nếu thiếu MME, UE không thể attach vào mạng." },
+  { section: "Control & User Plane", q: "S1-U là giao diện dùng cho việc gì?", opts: ["Truyền dữ liệu người dùng giữa eNB và S-GW","Xác thực thuê bao giữa MME và HSS","Kết nối P-GW với Internet","Điều khiển bearer của PCRF"], ans: 0, explain: "S1-U là giao diện user plane giữa eNB và S-GW." },
+  { section: "Control & User Plane", q: "S1-MME là giao diện giữa các khối nào?", opts: ["eNB và MME","S-GW và P-GW","MME và HSS","P-GW và PCRF"], ans: 0, explain: "S1-MME là giao diện control plane giữa eNB và MME." },
+  { section: "Control & User Plane", q: "S5/S8 là giao diện giữa khối nào?", opts: ["S-GW và P-GW","eNB và MME","MME và HSS","UE và eNB"], ans: 0, explain: "S5/S8 là giao diện giữa S-GW và P-GW (S5 nội bộ, S8 khi roaming)." },
+  { section: "Control & User Plane", q: "S6a là giao diện giữa khối nào?", opts: ["MME và HSS","S-GW và P-GW","eNB và S-GW","P-GW và PCRF"], ans: 0, explain: "S6a là giao diện giữa MME và HSS dùng để trao đổi thông tin xác thực và thuê bao." },
+  { section: "Control & User Plane", q: "SGi là giao diện giữa khối nào?", opts: ["P-GW và mạng dữ liệu ngoài","S-GW và eNB","MME và HSS","PCRF và TDF"], ans: 0, explain: "SGi là giao diện giữa P-GW và mạng dữ liệu ngoài như Internet." },
+  { section: "Control & User Plane", q: "Gx là giao diện liên quan đến khối nào?", opts: ["P-GW và PCRF","S-GW và MME","eNB và S-GW","UE và gNB"], ans: 0, explain: "Gx là giao diện giữa P-GW và PCRF để trao đổi chính sách QoS và charging rules." },
+  { section: "Control & User Plane", q: "S11 là giao diện giữa khối nào?", opts: ["MME và S-GW","S-GW và P-GW","eNB và MME","P-GW và TDF"], ans: 0, explain: "S11 là giao diện giữa MME và S-GW." },
+  { section: "Control & User Plane", q: "Control Plane chủ yếu xử lý loại thông tin nào?", opts: ["Báo hiệu điều khiển","Dữ liệu video","Streaming âm nhạc","Tải tệp"], ans: 0, explain: "Control Plane xử lý báo hiệu: đăng ký, xác thực, quản lý bearer và di động." },
+  { section: "Control & User Plane", q: "User Plane chủ yếu xử lý loại thông tin nào?", opts: ["Dữ liệu thật của người dùng","Xác thực SIM","Chọn mạng PLMN","Báo hiệu paging"], ans: 0, explain: "User Plane truyền tải dữ liệu thực của người dùng như web, video, VoIP." },
+  { section: "Control & User Plane", q: "Ví dụ nào thuộc User Plane?", opts: ["Dữ liệu YouTube","Thủ tục attach","Chọn S-GW","Xác thực IMSI"], ans: 0, explain: "Dữ liệu YouTube là nội dung người dùng thực sự truyền, thuộc User Plane." },
+  { section: "Control & User Plane", q: "Ví dụ nào thuộc Control Plane?", opts: ["Thủ tục attach của UE","Video call","Tải file","Truy cập web"], ans: 0, explain: "Thủ tục attach là báo hiệu điều khiển giữa UE và mạng, thuộc Control Plane." },
+  { section: "CUPS", q: "CUPS là viết tắt của cụm nào?", opts: ["Control and User Plane Separation","Core Unified Processing System","Centralized User Plane Service","Control Unit Packet Switching"], ans: 0, explain: "CUPS là Control and User Plane Separation — tách mặt phẳng điều khiển và dữ liệu." },
+  { section: "CUPS", q: "EPC before CUPS nghĩa là gì?", opts: ["EPC trước khi tách control plane và user plane","EPC ở vùng biên","EPC không có Internet","EPC dùng công nghệ 2G"], ans: 0, explain: "EPC before CUPS là kiến trúc trước khi áp dụng tách biệt CP và UP." },
+  { section: "CUPS", q: "Sau CUPS, S-GW có thể tách thành những phần nào?", opts: ["S-GW-C và S-GW-U","S-GW-A và S-GW-B","S-GW1 và S-GW2","SGi và SGx"], ans: 0, explain: "CUPS chia S-GW thành S-GW-C (Control) và S-GW-U (User Plane)." },
+  { section: "CUPS", q: "Sau CUPS, P-GW có thể tách thành những phần nào?", opts: ["P-GW-C và P-GW-U","P-GW-A và P-GW-B","PGW1 và PGW2","Gx và Gy"], ans: 0, explain: "CUPS chia P-GW thành P-GW-C (Control) và P-GW-U (User Plane)." },
+  { section: "CUPS", q: "Mục tiêu của CUPS là gì?", opts: ["Linh hoạt hơn, dễ mở rộng và tối ưu vị trí xử lý dữ liệu","Giảm băng thông vô tuyến","Xóa bỏ MME","Thay thế toàn bộ EPC bằng 5G"], ans: 0, explain: "CUPS giúp mạng linh hoạt, dễ scale và đặt User Plane gần người dùng để giảm độ trễ." },
+  { section: "CUPS", q: "Trong EPC before CUPS, S-GW/P-GW thường được triển khai như thế nào?", opts: ["Chức năng điều khiển và dữ liệu gộp trong cùng nút","Control Plane và User Plane ở hai máy chủ riêng","Chỉ có User Plane","Chỉ có Control Plane"], ans: 0, explain: "Trước CUPS, CP và UP tích hợp trong cùng thiết bị nên khó scale riêng từng phần." },
+  { section: "CUPS", q: "Khối nào sau đây liên quan nhiều nhất đến user plane trong EPC?", opts: ["S-GW","MME","HSS","PCRF"], ans: 0, explain: "S-GW xử lý và chuyển tiếp dữ liệu người dùng — thuộc User Plane." },
+  { section: "5G Core / SBA", q: "Trong 5G, eNB của 4G được thay bằng khối nào?", opts: ["gNB","AMF","UPF","SMF"], ans: 0, explain: "gNB (gNodeB) là trạm gốc 5G thay thế eNB trong 4G." },
+  { section: "5G Core / SBA", q: "Trong 5G, EPC của 4G được thay bằng gì?", opts: ["5GC","NG-RAN","gNB","NRF"], ans: 0, explain: "5GC (5G Core) là mạng lõi thế hệ 5G, thay thế EPC của 4G." },
+  { section: "5G Core / SBA", q: "Luồng tổng quát của mạng 5G là gì?", opts: ["UE → gNB/NG-RAN → 5GC → Data Network","UE → eNB → EPC → HSS","UE → MME → P-GW → Internet","UE → AMF → PCRF → S-GW"], ans: 0, explain: "Trong 5G, dữ liệu đi từ UE qua gNB/NG-RAN, vào 5GC rồi ra Data Network." },
+  { section: "5G Core / SBA", q: "5GS bao gồm những thành phần nào?", opts: ["UE, 5G Access Network và 5G Core Network","UE, eNB và EPC","gNB, MME và HSS","UPF, AMF và eNB"], ans: 0, explain: "5G System (5GS) bao gồm UE, 5G Access Network (NG-RAN) và 5G Core Network (5GC)." },
+  { section: "5G Core / SBA", q: "NG-RAN là gì?", opts: ["Mạng truy nhập vô tuyến thế hệ mới","Mạng lõi 5G","Giao diện giữa gNB và AMF","Khối xác thực 5G"], ans: 0, explain: "NG-RAN (Next Generation Radio Access Network) là mạng vô tuyến của 5G, bao gồm các gNB." },
+  { section: "5G Core / SBA", q: "gNB kết nối với AMF qua giao diện nào?", opts: ["N2","N3","N4","N6"], ans: 0, explain: "Giao diện N2 là control plane giữa gNB và AMF." },
+  { section: "5G Core / SBA", q: "gNB kết nối với UPF qua giao diện nào để truyền dữ liệu người dùng?", opts: ["N3","N2","N4","N6"], ans: 0, explain: "Giao diện N3 là user plane giữa gNB và UPF." },
+  { section: "5G Core / SBA", q: "AMF là viết tắt của cụm nào?", opts: ["Access and Mobility Management Function","Application Mobility Function","Authentication Management Feature","Access Media Framework"], ans: 0, explain: "AMF là Access and Mobility Management Function trong 5G Core." },
+  { section: "5G Core / SBA", q: "AMF trong 5G tương ứng gần nhất với khối nào trong 4G?", opts: ["MME","HSS","P-GW","PCRF"], ans: 0, explain: "AMF đảm nhiệm vai trò quản lý truy nhập và di động gần với MME trong 4G." },
+  { section: "5G Core / SBA", q: "AMF xử lý chức năng nào?", opts: ["Đăng ký UE và quản lý di động","Định tuyến dữ liệu người dùng","Lưu thông tin thuê bao","Tạo pilot symbol"], ans: 0, explain: "AMF quản lý đăng ký UE, quản lý truy nhập và di động." },
+  { section: "5G Core / SBA", q: "AMF có trực tiếp truyền dữ liệu người dùng không?", opts: ["Không","Có, toàn bộ dữ liệu","Có, chỉ dữ liệu video","Có, chỉ khi roaming"], ans: 0, explain: "AMF là control plane, không trực tiếp truyền dữ liệu người dùng (UPF làm điều đó)." },
+  { section: "5G Core / SBA", q: "SMF là viết tắt của cụm nào?", opts: ["Session Management Function","Subscriber Management Feature","Service Mobility Function","Signal Mapping Framework"], ans: 0, explain: "SMF là Session Management Function trong 5G Core." },
+  { section: "5G Core / SBA", q: "SMF quản lý đối tượng nào?", opts: ["PDU Session","Bearer 4G","Pilot Symbol","Tracking Area"], ans: 0, explain: "SMF thiết lập, quản lý và giải phóng các PDU Session trong 5G." },
+  { section: "5G Core / SBA", q: "SMF điều khiển UPF qua giao diện nào?", opts: ["N4","N2","N3","N6"], ans: 0, explain: "Giao diện N4 dùng để SMF điều khiển UPF theo giao thức PFCP." },
+  { section: "5G Core / SBA", q: "UPF là viết tắt của cụm nào?", opts: ["User Plane Function","Unified Packet Framework","Universal Protocol Function","User Profile Feature"], ans: 0, explain: "UPF là User Plane Function trong 5G Core." },
+  { section: "5G Core / SBA", q: "UPF có nhiệm vụ chính nào?", opts: ["Định tuyến và chuyển tiếp dữ liệu người dùng","Xác thực thuê bao","Quản lý PDU Session","Lưu hồ sơ thuê bao"], ans: 0, explain: "UPF xử lý tất cả lưu lượng user plane trong 5G, tương tự S-GW/P-GW trong 4G." },
+  { section: "5G Core / SBA", q: "UPF kết nối ra Data Network qua giao diện nào?", opts: ["N6","N3","N4","N2"], ans: 0, explain: "Giao diện N6 là điểm kết nối UPF với Data Network (Internet, IMS,...)." },
+  { section: "5G Core / SBA", q: "UDM là viết tắt của cụm nào?", opts: ["Unified Data Management","User Device Module","Universal Data Matrix","Uplink Data Manager"], ans: 0, explain: "UDM là Unified Data Management, quản lý dữ liệu thuê bao trong 5G." },
+  { section: "5G Core / SBA", q: "UDM trong 5G tương ứng gần nhất với khối nào trong 4G?", opts: ["HSS","MME","PCRF","S-GW"], ans: 0, explain: "UDM kế thừa vai trò lưu và quản lý dữ liệu thuê bao từ HSS trong 4G." },
+  { section: "5G Core / SBA", q: "PCF trong 5G tương ứng gần nhất với khối nào trong 4G?", opts: ["PCRF","MME","S-GW","P-GW"], ans: 0, explain: "PCF (Policy Control Function) kế thừa vai trò điều khiển chính sách từ PCRF trong 4G." },
+  { section: "5G Core / SBA", q: "NRF trong 5G có vai trò gì?", opts: ["Quản lý và khám phá Network Function","Xác thực SIM","Truyền dữ liệu user plane","Lưu thông tin tracking area"], ans: 0, explain: "NRF (Network Repository Function) lưu thông tin về các NF và cho phép các NF khám phá nhau." },
+  { section: "5G Core / SBA", q: "AUSF trong 5G có vai trò gì?", opts: ["Xác thực thuê bao","Định tuyến dữ liệu","Quản lý PDU Session","Lưu hồ sơ QoS"], ans: 0, explain: "AUSF (Authentication Server Function) thực hiện xác thực thuê bao trong 5G." },
+  { section: "5G Core / SBA", q: "NSSF trong 5G có vai trò gì?", opts: ["Chọn Network Slice phù hợp cho UE","Cấp địa chỉ IP","Xác thực IMSI","Tạo pilot symbol"], ans: 0, explain: "NSSF (Network Slice Selection Function) chọn network slice phù hợp cho từng UE." },
+  { section: "5G Core / SBA", q: "AF trong 5G là gì?", opts: ["Application Function","Access Framework","Authentication Field","Analog Filter"], ans: 0, explain: "AF đại diện cho ứng dụng hoặc dịch vụ tương tác với mạng 5G." },
+  { section: "5G Core / SBA", q: "SBA là viết tắt của cụm nào?", opts: ["Service Based Architecture","Signal Based Antenna","System Band Allocation","Subscriber Bearer Access"], ans: 0, explain: "SBA là Service Based Architecture — kiến trúc dựa trên dịch vụ của mạng lõi 5G." },
+  { section: "5G Core / SBA", q: "Đặc điểm nổi bật của SBA là gì?", opts: ["Các NF giao tiếp linh hoạt như dịch vụ qua API","Mọi dữ liệu đều qua MME","Không còn control plane","Chỉ dùng trong mạng 2G"], ans: 0, explain: "Trong SBA, các NF cung cấp và gọi dịch vụ qua service interface (HTTP/2), linh hoạt hơn điểm-điểm." },
+  { section: "5G Core / SBA", q: "Namf là giao diện dịch vụ của khối nào?", opts: ["AMF","SMF","UDM","PCF"], ans: 0, explain: "Namf là service interface do AMF cung cấp trong kiến trúc SBA." },
+  { section: "5G Core / SBA", q: "Nsmf là giao diện dịch vụ của khối nào?", opts: ["SMF","AMF","NRF","AUSF"], ans: 0, explain: "Nsmf là service interface do SMF cung cấp." },
+  { section: "5G Core / SBA", q: "Trong 5G, luồng dữ liệu người dùng cơ bản là gì?", opts: ["UE → gNB → UPF → Data Network","UE → AMF → AUSF → UDM","UE → NRF → NSSF → Internet","UE → SMF → PCF → HSS"], ans: 0, explain: "Dữ liệu user plane trong 5G đi qua gNB và UPF để ra Data Network." },
+  { section: "5G Core / SBA", q: "So sánh đúng giữa 4G và 5G là gì?", opts: ["MME tương ứng AMF","HSS tương ứng gNB","P-GW tương ứng AMF","eNB tương ứng PCF"], ans: 0, explain: "AMF trong 5G đảm nhiệm vai trò truy nhập và di động gần với MME trong 4G." },
+  { section: "5G Core / SBA", q: "So sánh đúng giữa HSS và UDM là gì?", opts: ["HSS trong 4G tương ứng UDM trong 5G","HSS tương ứng UPF trong 5G","UDM là trạm gốc","HSS là pilot symbol"], ans: 0, explain: "Cả HSS và UDM đều quản lý dữ liệu thuê bao, UDM thuộc kiến trúc 5G." },
+  { section: "TDD & FDD / Massive MIMO", q: "TDD là viết tắt của cụm nào?", opts: ["Time Division Duplex","Traffic Data Detection","Terminal Digital Duplex","Time Data Downlink"], ans: 0, explain: "TDD là Time Division Duplex — song công phân chia theo thời gian." },
+  { section: "TDD & FDD / Massive MIMO", q: "FDD là viết tắt của cụm nào?", opts: ["Frequency Division Duplex","Frame Data Detection","Fast Digital Downlink","Frequency Data Device"], ans: 0, explain: "FDD là Frequency Division Duplex — song công phân chia theo tần số." },
+  { section: "TDD & FDD / Massive MIMO", q: "Nguyên lý của TDD là gì?", opts: ["UL và DL dùng cùng dải tần nhưng chia theo thời gian","UL và DL dùng hai dải tần riêng","Chỉ có uplink","Chỉ có downlink"], ans: 0, explain: "Trong TDD, uplink và downlink dùng chung tần số nhưng truyền ở các khoảng thời gian khác nhau." },
+  { section: "TDD & FDD / Massive MIMO", q: "Nguyên lý của FDD là gì?", opts: ["UL và DL dùng hai dải tần khác nhau","UL và DL dùng cùng dải tần và cùng thời điểm","Chỉ dùng pilot","Không cần băng tần"], ans: 0, explain: "FDD dùng một dải tần cho uplink và một dải tần khác cho downlink." },
+  { section: "TDD & FDD / Massive MIMO", q: "Trong TDD, uplink và downlink có truyền đồng thời trên cùng cell và cùng tần số không?", opts: ["Thường không","Luôn có","Chỉ trong HSS","Chỉ khi không có UE"], ans: 0, explain: "TDD chia thời gian cho UL và DL nên thường không truyền đồng thời trên cùng tần số." },
+  { section: "TDD & FDD / Massive MIMO", q: "Trong FDD, uplink và downlink có thể truyền như thế nào?", opts: ["Gần như đồng thời trên hai dải tần khác nhau","Không bao giờ truyền được","Chỉ truyền được uplink","Chỉ truyền được downlink"], ans: 0, explain: "Do UL và DL dùng hai băng tần riêng, FDD có thể truyền lên và xuống gần như đồng thời." },
+  { section: "TDD & FDD / Massive MIMO", q: "TDD cần loại phổ tần nào?", opts: ["Băng tần không ghép cặp","Luôn cần hai băng tần ghép đôi","Không cần phổ tần","Chỉ cần tần số âm"], ans: 0, explain: "TDD có thể dùng băng tần không ghép cặp (unpaired spectrum) vì UL và DL chia thời gian." },
+  { section: "TDD & FDD / Massive MIMO", q: "FDD thường cần loại phổ tần nào?", opts: ["Cặp băng tần ghép đôi","Một băng tần cho cả hai chiều","Không cần duplexer","Chỉ cần một khe thời gian"], ans: 0, explain: "FDD cần một băng tần uplink và một băng tần downlink riêng biệt." },
+  { section: "TDD & FDD / Massive MIMO", q: "TDD có ưu điểm nào về tỉ lệ uplink/downlink?", opts: ["Có thể linh hoạt thay đổi tỉ lệ thời gian UL/DL","Tỉ lệ UL/DL luôn cố định","Không có downlink","Không có uplink"], ans: 0, explain: "TDD linh hoạt vì có thể phân bổ nhiều khe thời gian hơn cho chiều có nhu cầu lớn hơn." },
+  { section: "TDD & FDD / Massive MIMO", q: "FDD có nhược điểm nào trong Massive MIMO?", opts: ["Overhead phản hồi CSI lớn khi số anten tăng","Không thể truyền đồng thời","Không cần pilot","Không dùng được Internet"], ans: 0, explain: "Trong FDD, UE cần đo và phản hồi CSI cho downlink vì UL/DL khác tần số — overhead tăng theo số anten." },
+  { section: "TDD & FDD / Massive MIMO", q: "Vì sao TDD phù hợp với Massive MIMO?", opts: ["Tận dụng được tính đối xứng kênh (channel reciprocity)","Không cần ước lượng kênh","Không cần anten","Không cần đồng bộ"], ans: 0, explain: "UL và DL dùng cùng tần số nên có thể khai thác channel reciprocity để giảm overhead CSI." },
+  { section: "TDD & FDD / Massive MIMO", q: "Channel reciprocity trong TDD có nghĩa là gì?", opts: ["Kênh UL và DL trên cùng tần số có thể liên hệ/tương tự nhau","UL và DL luôn dùng hai tần số khác nhau","Không cần truyền pilot","UE không cần kết nối gNB"], ans: 0, explain: "Tính đối xứng kênh cho phép trạm gốc dùng ước lượng kênh uplink để hỗ trợ downlink beamforming." },
+  { section: "TDD & FDD / Massive MIMO", q: "Trong Massive MIMO TDD, UE thường gửi gì để trạm gốc ước lượng kênh?", opts: ["Pilot uplink","HSS profile","PCRF rule","S1-MME message"], ans: 0, explain: "UE gửi pilot uplink, trạm gốc dùng pilot đó để ước lượng kênh nhờ channel reciprocity." },
+  { section: "TDD & FDD / Massive MIMO", q: "Trong FDD Massive MIMO, vì sao cần phản hồi CSI?", opts: ["Vì kênh UL và DL ở hai tần số khác nhau","Vì không có UE","Vì không có trạm gốc","Vì HSS yêu cầu"], ans: 0, explain: "Do UL và DL khác tần số, trạm gốc không thể trực tiếp dùng kênh uplink để suy ra downlink." },
+  { section: "TDD & FDD / Massive MIMO", q: "TDD có thể gặp yêu cầu kỹ thuật quan trọng nào?", opts: ["Cần đồng bộ thời gian và guard period","Không cần đồng bộ","Không cần cell","Không cần pilot"], ans: 0, explain: "TDD chia UL/DL theo thời gian nên cần đồng bộ tốt và khoảng bảo vệ để tránh chồng lấn." },
+  { section: "Pilot Symbol", q: "Pilot symbol là gì?", opts: ["Ký hiệu tham chiếu đã biết trước","Dữ liệu người dùng chính","Khối mạng lõi 5G","Cổng ra Internet"], ans: 0, explain: "Pilot symbol là tín hiệu/ký hiệu đã biết dùng để ước lượng kênh truyền." },
+  { section: "Pilot Symbol", q: "Pilot symbol có mang dữ liệu người dùng chính không?", opts: ["Không","Có, toàn bộ dữ liệu người dùng","Chỉ dữ liệu YouTube","Chỉ dữ liệu thoại"], ans: 0, explain: "Pilot chủ yếu dùng để tham chiếu và ước lượng kênh, không phải dữ liệu nội dung chính." },
+  { section: "Pilot Symbol", q: "Pilot symbol giúp bên thu làm gì?", opts: ["Ước lượng đặc tính kênh truyền","Lưu hồ sơ thuê bao","Chọn S-GW","Tính cước thuê bao"], ans: 0, explain: "Bên thu so sánh pilot nhận được với pilot gốc để biết suy hao, lệch pha và méo kênh." },
+];
+
+const TOTAL_Q = 15;
+let selected = [];
+let current = 0;
+let score = 0;
+let userAnswers = [];
+let answered = false;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startQuiz() {
+  selected = shuffle(ALL_QUESTIONS).slice(0, TOTAL_Q);
+  current = 0;
+  score = 0;
+  userAnswers = new Array(TOTAL_Q).fill(null);
+  answered = false;
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  answered = false;
+  const q = selected[current];
+  const pct = ((current) / TOTAL_Q) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('q-num').textContent = current + 1;
+  document.getElementById('live-score').textContent = score;
+  document.getElementById('btn-next').disabled = true;
+  document.getElementById('btn-skip').disabled = false;
+
+  // Shuffle options
+  const indices = shuffle([0,1,2,3]);
+  const opts = indices.map(i => ({ text: q.opts[i], original: i }));
+  const correctNewIdx = opts.findIndex(o => o.original === q.ans);
+
+  const html = `
+    <div class="question-card">
+      <div class="q-section">${q.section}</div>
+      <div class="q-text">${q.q}</div>
+    </div>
+    <div class="options" id="options-wrap">
+      ${opts.map((o, i) => `
+        <button class="option" onclick="selectAnswer(${i}, ${correctNewIdx})" data-idx="${i}">
+          <span class="opt-key">${'ABCD'[i]}</span>
+          <span>${o.text}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="explain-box" id="explain-box">
+      <strong>💡 Giải thích</strong>
+      ${q.explain}
+    </div>
+  `;
+  document.getElementById('question-area').innerHTML = html;
+  // Store mapping
+  window._correctNewIdx = correctNewIdx;
+  window._currentOpts = opts;
+}
+
+function selectAnswer(chosen, correctIdx) {
+  if (answered) return;
+  answered = true;
+  const buttons = document.querySelectorAll('.option');
+  buttons.forEach(b => b.classList.add('disabled'));
+
+  if (chosen === correctIdx) {
+    score++;
+    buttons[chosen].classList.add('correct');
+    document.getElementById('live-score').textContent = score;
+  } else {
+    buttons[chosen].classList.add('wrong');
+    buttons[correctIdx].classList.add('correct');
+  }
+
+  userAnswers[current] = chosen;
+  window._chosenIdx = chosen;
+  document.getElementById('explain-box').classList.add('show');
+  document.getElementById('btn-next').disabled = false;
+  document.getElementById('btn-skip').disabled = true;
+}
+
+function skipQuestion() {
+  userAnswers[current] = -1;
+  answered = true;
+  // Show correct answer
+  const buttons = document.querySelectorAll('.option');
+  buttons.forEach(b => b.classList.add('disabled'));
+  buttons[window._correctNewIdx].classList.add('correct');
+  document.getElementById('explain-box').classList.add('show');
+  document.getElementById('btn-next').disabled = false;
+  document.getElementById('btn-skip').disabled = true;
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= TOTAL_Q) {
+    showResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showResult() {
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'block';
+
+  const pct = Math.round((score / TOTAL_Q) * 100);
+  document.getElementById('score-big').textContent = score;
+  document.getElementById('stat-correct').textContent = score;
+  document.getElementById('stat-wrong').textContent = TOTAL_Q - score;
+  document.getElementById('stat-pct').textContent = pct + '%';
+
+  // Animate ring
+  const circ = 427;
+  const offset = circ - (circ * score / TOTAL_Q);
+  const arc = document.getElementById('score-arc');
+  let color;
+  if (pct >= 80) { color = '#10b981'; }
+  else if (pct >= 60) { color = '#f59e0b'; }
+  else { color = '#ef4444'; }
+  arc.style.stroke = color;
+  setTimeout(() => { arc.style.strokeDashoffset = offset; }, 100);
+
+  // Grade
+  let grade, msg;
+  if (pct >= 90) { grade = '🏆 Xuất sắc!'; msg = 'Bạn nắm rất vững kiến thức EPC, 5G và TDD/FDD. Tiếp tục duy trì nhé!'; }
+  else if (pct >= 80) { grade = '⭐ Giỏi!'; msg = 'Kết quả rất tốt! Chỉ cần ôn thêm một chút để đạt điểm tuyệt đối.'; }
+  else if (pct >= 60) { grade = '👍 Khá!'; msg = 'Bạn đã nắm được phần lớn kiến thức. Hãy ôn lại các câu sai và làm lại!'; }
+  else { grade = '📚 Cần cố gắng hơn'; msg = 'Đừng nản! Xem lại các câu sai, ôn kỹ và thử lại với bộ câu mới nhé.'; }
+  document.getElementById('result-grade').textContent = grade;
+  document.getElementById('result-grade').style.color = color;
+  document.getElementById('result-msg').textContent = msg;
+
+  // Review wrong answers
+  const wrongs = [];
+  selected.forEach((q, i) => {
+    const ua = userAnswers[i];
+    const isRight = ua === window._answerMap?.[i];
+    // Re-derive: we need to check if user got it right
+    // Actually track per question
+  });
+
+  // Build review (we'll track this differently)
+  buildReview();
+}
+
+// Better approach: store correct/wrong per question during quiz
+// Let's add a results tracker
+let resultsTracker = [];
+
+function selectAnswerTracked(chosen, correctIdx, qIdx) {
+  // called from renderQuestion
+}
+
+// Override startQuiz to also reset tracker
+const _origStart = startQuiz;
+// Re-implement properly:
+function startQuiz() {
+  selected = shuffle(ALL_QUESTIONS).slice(0, TOTAL_Q);
+  current = 0;
+  score = 0;
+  userAnswers = [];
+  resultsTracker = [];
+  answered = false;
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  renderQuestion();
+}
+
+function selectAnswer(chosen, correctIdx) {
+  if (answered) return;
+  answered = true;
+  const buttons = document.querySelectorAll('.option');
+  buttons.forEach(b => b.classList.add('disabled'));
+
+  const isCorrect = chosen === correctIdx;
+  if (isCorrect) {
+    score++;
+    buttons[chosen].classList.add('correct');
+    document.getElementById('live-score').textContent = score;
+  } else {
+    buttons[chosen].classList.add('wrong');
+    buttons[correctIdx].classList.add('correct');
+  }
+
+  resultsTracker.push({
+    q: selected[current],
+    isCorrect,
+    chosenText: chosen >= 0 ? window._currentOpts[chosen].text : null,
+    correctText: window._currentOpts[correctIdx].text
+  });
+
+  document.getElementById('explain-box').classList.add('show');
+  document.getElementById('btn-next').disabled = false;
+  document.getElementById('btn-skip').disabled = true;
+}
+
+function skipQuestion() {
+  answered = true;
+  const buttons = document.querySelectorAll('.option');
+  buttons.forEach(b => b.classList.add('disabled'));
+  buttons[window._correctNewIdx].classList.add('correct');
+  document.getElementById('explain-box').classList.add('show');
+  document.getElementById('btn-next').disabled = false;
+  document.getElementById('btn-skip').disabled = true;
+
+  resultsTracker.push({
+    q: selected[current],
+    isCorrect: false,
+    chosenText: null,
+    correctText: window._currentOpts[window._correctNewIdx].text
+  });
+}
+
+function buildReview() {
+  const wrongs = resultsTracker.filter(r => !r.isCorrect);
+  const rl = document.getElementById('review-list');
+  if (wrongs.length === 0) {
+    rl.innerHTML = '<div style="text-align:center;color:var(--correct);font-size:15px;padding:16px">🎉 Bạn đã trả lời đúng tất cả các câu!</div>';
+    return;
+  }
+  rl.innerHTML = `<h3>Các câu cần xem lại (${wrongs.length} câu)</h3>` +
+    wrongs.map(r => `
+      <div class="review-item">
+        <div class="ri-q">${r.q.q}</div>
+        <div class="ri-correct">✓ Đáp án đúng: ${r.correctText}</div>
+        ${r.chosenText ? `<div class="ri-yours">✗ Bạn chọn: ${r.chosenText}</div>` : '<div class="ri-yours">— Bỏ qua</div>'}
+      </div>
+    `).join('');
+}
+
+function showResult() {
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'block';
+
+  const pct = Math.round((score / TOTAL_Q) * 100);
+  document.getElementById('score-big').textContent = score;
+  document.getElementById('stat-correct').textContent = score;
+  document.getElementById('stat-wrong').textContent = TOTAL_Q - score;
+  document.getElementById('stat-pct').textContent = pct + '%';
+
+  const circ = 427;
+  const offset = circ - (circ * score / TOTAL_Q);
+  const arc = document.getElementById('score-arc');
+  let color = pct >= 80 ? '#10b981' : pct >= 60 ? '#f59e0b' : '#ef4444';
+  arc.style.stroke = color;
+  setTimeout(() => { arc.style.strokeDashoffset = offset; }, 100);
+
+  let grade, msg;
+  if (pct >= 90) { grade = '🏆 Xuất sắc!'; msg = 'Bạn nắm rất vững kiến thức. Tiếp tục duy trì nhé!'; }
+  else if (pct >= 80) { grade = '⭐ Giỏi!'; msg = 'Kết quả rất tốt! Chỉ cần ôn thêm một chút là hoàn hảo.'; }
+  else if (pct >= 60) { grade = '👍 Khá!'; msg = 'Bạn đã nắm được phần lớn kiến thức. Ôn lại câu sai và thử lại!'; }
+  else { grade = '📚 Cần cố gắng hơn'; msg = 'Xem lại các câu sai, ôn kỹ và thử lại với bộ câu mới nhé.'; }
+  document.getElementById('result-grade').textContent = grade;
+  document.getElementById('result-grade').style.color = color;
+  document.getElementById('result-msg').textContent = msg;
+  buildReview();
+}
+
+function showHome() {
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('start-screen').style.display = 'block';
+}
+</script>
+</body>
+</html>
